@@ -1,0 +1,117 @@
+workflow:
+  - node:
+    node_name: start_1
+    category: start
+    next_node_name: conditional_1
+    next_category: conditional
+  - node:
+    node_name: conditional_1
+    category: conditional
+    next_node_name: ""
+    next_category: ""
+  - node:
+    node_name: ruleset_1
+    category: ruleset
+    next_node_name: end_1
+    next_category: end
+  - node:
+    node_name: ruleset_2
+    category: ruleset
+    next_node_name: end_2
+    next_category: end
+  - node:
+    node_name: end_1
+    category: end
+    next_node_name: ""
+    next_category: ""
+  - node:
+    node_name: end_2
+    category: end
+    next_node_name: ""
+    next_category: ""
+rulesets:
+  - ruleset:
+    ruleset_name: ruleset_1
+    ruleset_category: internal
+    rule_exec: allrun  #rule execution strategy:allrun,rejectbreak
+    rules: 
+    - rule: 
+      rule_name: rule_1
+      conditions:
+      - condition:
+        feature: feature_1
+        operator: GT
+        value: 50
+      logic: "" 
+      depends: [feature_1]
+      decision: reject
+    - rule: 
+      rule_name: rule_2
+      conditions:
+      - condition:
+        feature: feature_2
+        operator: LT
+        value: 18
+      - condition:
+        feature: feature_3
+        operator: GT
+        value: 50
+      logic: OR
+      depends: [feature_2,feature_3]
+      decision: reject 
+  - ruleset:
+    ruleset_name: ruleset_2
+    ruleset_category: internal
+    rule_exec: allrun  #rule execution strategy:allrun,rejectbreak
+    rules: 
+    - rule: 
+      rule_name: rule_3
+      conditions:
+      - condition:
+        feature: feature_1
+        operator: GT
+        value: 50
+      logic: "" 
+      depends: [feature_1]
+      decision: reject
+    - rule: 
+      rule_name: rule_4
+      conditions:
+      - condition:
+        feature: feature_2
+        operator: LT
+        value: 18
+      - condition:
+        feature: feature_2
+        operator: GT
+        value: 50
+      logic: OR
+      depends: [feature_2]
+      decision: reject 
+conditionals:
+  - conditional:
+    conditional_name: conditional_1 
+    depends: [feature_4]
+    branchs:
+    - branch:
+      branch_name: branch_1
+      conditions:
+        - condition:
+          feature: feature_4
+          operator: GT
+          value: 5
+        - condition:
+          feature: feature_4
+          operator: LE
+          value: 10
+      logic: AND
+      decision: ruleset_1
+    - branch:
+      branch_name: branch_2
+      conditions:
+        - condition:
+          feature: feature_4
+          operator: GT
+          value: 10
+      logic: ""
+      decision: ruleset_2
