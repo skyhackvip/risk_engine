@@ -1,0 +1,58 @@
+decisiontrees:
+  - decisiontree:
+    name: decisiontree_1
+    depends: [feature_1, feature_2]
+    rules:
+    - rule:
+      rule_name: "rule_1"
+      conditions:
+      - condition:
+        feature: feature_1
+        operator: GE
+        value: 20
+      logic: AND
+      decision: D1
+    - rule:
+      rule_name: "rule_2"
+      conditions:
+      - condition:
+        feature: feature_1
+        operator: LT
+        value: 20
+      logic: AND
+      decision: D2
+    - rule:
+      rule_name: "rule_3"
+      conditions:
+      - condition:
+        feature: feature_2
+        operator: LT
+        value: 5
+      logic: AND
+      decision: D3
+    - rule:
+      rule_name: "rule_4"
+      conditions:
+      - condition:
+        feature: feature_2
+        operator: GE
+        value: 5
+      logic: AND
+      decision: D4
+    decisions:
+    - decision:
+      depends: [D1, D3]
+      logic: AND
+      output: A
+    - decision:
+      depends: [D1, D4]
+      logic: AND
+      output: B
+    - decision:
+      depends: [D2, D3]
+      logic: AND
+      output: C
+    - decision:
+      depends: [D2, D4]
+      logic: AND
+      output: D

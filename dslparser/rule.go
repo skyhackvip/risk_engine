@@ -1,7 +1,6 @@
 package dslparser
 
 import (
-	"github.com/skyhackvip/risk_engine/configs"
 	"github.com/skyhackvip/risk_engine/internal"
 	"github.com/skyhackvip/risk_engine/operator"
 	"log"
@@ -16,7 +15,7 @@ type Rule struct {
 }
 
 //parse rule
-func (rule *Rule) parse() int {
+func (rule *Rule) parse() bool {
 	var conditionRs = make([]bool, 0)
 	depends := internal.GetFeatures(rule.Depends) //need to check
 	for _, condition := range rule.Conditions {
@@ -28,23 +27,5 @@ func (rule *Rule) parse() int {
 	}
 	logicRs, _ := operator.Boolean(conditionRs, rule.Logic)
 	log.Printf("rule %s decision is: %v\n", rule.RuleName, logicRs)
-	if logicRs {
-		return configs.DecisionMap[rule.Decision]
-	} else {
-		return configs.NilDecision
-	}
-}
-
-//get depend feature value
-func getDepends(depends []string) map[string]interface{} {
-	var rs = make(map[string]interface{})
-	rsMap := make(map[string]int)
-	rsMap["feature1"] = 5
-	rsMap["feature2"] = 10
-	rsMap["feature3"] = 20
-
-	for _, feature := range depends {
-		rs[feature] = rsMap[feature]
-	}
-	return rs
+	return logicRs
 }

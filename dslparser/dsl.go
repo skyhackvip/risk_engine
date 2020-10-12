@@ -2,15 +2,18 @@ package dslparser
 
 import (
 	"github.com/skyhackvip/risk_engine/configs"
+	"github.com/skyhackvip/risk_engine/global"
 	yaml "gopkg.in/yaml.v2"
 	"io/ioutil"
 	"log"
 )
 
 type Dsl struct {
-	Workflow     []Node        `yaml:"workflow,flow"`
-	Rulesets     []Ruleset     `yaml:"rulesets,flow"`
-	Conditionals []Conditional `yaml:"conditionals,flow"`
+	Workflow       []Node           `yaml:"workflow,flow"`
+	Rulesets       []Ruleset        `yaml:"rulesets,flow"`
+	Conditionals   []Conditional    `yaml:"conditionals,flow"`
+	Decisiontrees  []Decisiontree   `yaml:"decisiontrees,flow"`
+	DecisionMatrix []DecisionMatrix `yaml:"decisionmatrixs,flow"`
 }
 
 //load dsl from file
@@ -29,12 +32,12 @@ func LoadDslFromFile(file string) *Dsl {
 }
 
 //parse dsl run node followed workflow
-func (dsl *Dsl) Parse() *DslResult {
+func (dsl *Dsl) Parse() *global.DslResult {
 	log.Println("dsl parse start...")
 	if len(dsl.Workflow) == 0 {
 		panic("dsl workflow is empty!")
 	}
-	var result = new(DslResult)
+	var result = new(global.DslResult)
 	//from start node
 	firstNode := dsl.FindStartNode()
 	dsl.gotoNextNode(firstNode.NodeName, firstNode.Category, result)
@@ -56,7 +59,7 @@ func isBreakDecision(decision interface{}) bool {
 }
 
 //parse node and find next
-func (dsl *Dsl) gotoNextNode(nodeName string, category string, result *DslResult) {
+func (dsl *Dsl) gotoNextNode(nodeName string, category string, result *global.DslResult) {
 	//find current node from workflow
 	node := dsl.FindNode(nodeName)
 	if node == nil {
@@ -141,4 +144,14 @@ func (dsl *Dsl) ParseRuleset(ruleset Ruleset) interface{} {
 //parse conditional
 func (dsl *Dsl) ParseConditional(conditional Conditional) interface{} {
 	return conditional.parse()
+}
+
+//parse decisiontree
+func (dsl *Dsl) ParseDecisionTree(decisionTree Decisiontree) interface{} {
+	return decisionTree.parse()
+}
+
+//parse decisionmatrix
+func (dsl *Dsl) ParseDecisionMatrix(decisionMatrix DecisionMatrix) interface{} {
+	return decisionMatrix.parse()
 }

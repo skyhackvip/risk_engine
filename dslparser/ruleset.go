@@ -1,6 +1,7 @@
 package dslparser
 
 import (
+	"github.com/skyhackvip/risk_engine/configs"
 	"log"
 	"sort"
 )
@@ -16,7 +17,13 @@ func (ruleset *Ruleset) parse() int {
 	log.Printf("ruleset %s parse :\n", ruleset.RulesetName)
 	var ruleResult = make([]int, 0)
 	for _, rule := range ruleset.Rules {
-		ruleResult = append(ruleResult, rule.parse())
+		rs := rule.parse()
+		ruleDecision := configs.NilDecision
+		if rs {
+			ruleDecision = configs.DecisionMap[rule.Decision]
+		}
+		ruleResult = append(ruleResult, ruleDecision)
+
 	}
 	if len(ruleResult) == 0 {
 		log.Printf("ruleset %s parse no result\n", ruleset.RulesetName)

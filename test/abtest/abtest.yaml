@@ -1,0 +1,98 @@
+workflow:
+  - node:
+    node_name: start_1
+    category: start
+    next_node_name: abtest_1
+    next_category: abtest
+  - node:
+    node_name: abtest_1
+    category: abtest
+    next_node_name: ""
+    next_category: ""
+  - node:
+    node_name: ruleset_1
+    category: ruleset
+    next_node_name: end_1
+    next_category: end
+  - node:
+    node_name: ruleset_2
+    category: ruleset
+    next_node_name: end_1
+    next_category: end
+  - node:
+    node_name: end_1
+    category: end
+    next_node_name: ""
+    next_category: ""
+rulesets:
+  - ruleset:
+    ruleset_name: ruleset_1
+    ruleset_category: internal
+    rule_exec: allrun
+    rules: 
+    - rule: 
+      rule_name: rule_1
+      conditions:
+      - condition:
+        feature: feature_1
+        operator: GT
+        value: 50
+      logic: AND 
+      depends: [feature_1]
+      decision: reject
+    - rule: 
+      rule_name: rule_2
+      conditions:
+      - condition:
+        feature: feature_2
+        operator: LT
+        value: 18
+      - condition:
+        feature: feature_3
+        operator: GT
+        value: 50
+      logic: OR
+      depends: [feature_2,feature_3]
+      decision: reject 
+  - ruleset:
+    ruleset_id: 6
+    ruleset_name: ruleset_2
+    ruleset_category: internal
+    rule_exec: allrun
+    rules: 
+    - rule: 
+      rule_name: rule_3
+      conditions:
+      - condition:
+        feature: feature_1
+        operator: GT
+        value: 50
+      logic: AND 
+      depends: [feature_1]
+      decision: reject
+    - rule: 
+      rule_name: rule_4
+      conditions:
+      - condition:
+        feature: feature_2
+        operator: LT
+        value: 18
+      - condition:
+        feature: feature_3
+        operator: GT
+        value: 50
+      logic: OR
+      depends: [feature_2,feature_3]
+      decision: reject 
+abtests:
+  - abtest:
+    abtest_name: abtest_1 
+    branchs:
+    - branch:
+      branch_name: branch_1
+      percent: 45
+      decision: ruleset_1
+    - branch:
+      branch_name: branch_2
+      percent: 55
+      decision: ruleset_2

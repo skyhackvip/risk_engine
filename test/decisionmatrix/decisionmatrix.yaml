@@ -1,0 +1,79 @@
+decisionmatrixs:
+  - decisionmatrix:
+    name: decisionmatrix_1
+    depends: [model_1, model_2]
+    rules:
+    - rule:
+      rule_name: "rule_1"
+      conditions:
+      - condition:
+        feature: model_1
+        operator: LT
+        value: 80
+      logic: AN
+      decision: D1
+    - rule:
+      rule_name: "rule_2"
+      conditions:
+      - condition:
+        feature: model_1
+        operator: GE
+        value: 80
+      logic: AND
+      decision: D2
+    - rule:
+      rule_name: "rule_3"
+      conditions:
+      - condition:
+        feature: model_2
+        operator: LT
+        value: 100
+      logic: AND
+      decision: D3
+    - rule:
+      rule_name: "rule_4"
+      conditions:
+      - condition:
+        feature: model_2
+        operator: GE
+        value: 100
+      - condition:
+        feature: model_2
+        operator: LT
+        value: 150
+      logic: AND
+      decision: D4
+    - rule:
+      rule_name: "rule_5"
+      conditions:
+      - condition:
+        feature: model_2
+        operator: GE
+        value: 150
+      logic: AND
+      decision: D5
+    decisions:
+    - decision:
+      depends: [D1, D3]
+      logic: AND
+      output: A
+    - decision:
+      depends: [D1, D4]
+      logic: AND
+      output: A
+    - decision:
+      depends: [D1, D5]
+      logic: AND
+      output: B
+    - decision:
+      depends: [D2, D3]
+      logic: AND
+      output: A
+    - decision:
+      depends: [D2, D4]
+      logic: AND
+      output: B
+    - decision:
+      depends: [D2, D5]
+      logic: AND
+      output: C
