@@ -12,6 +12,7 @@ var OperatorMap = map[string]string{
 	"LE":  "<=",
 	"EQ":  "==",
 	"NEQ": "!=",
+	//todo add string like
 }
 
 var DecisionMap = map[string]int{
@@ -19,6 +20,17 @@ var DecisionMap = map[string]int{
 	"pass":   0,
 	"record": 1,
 }
+
+const (
+	ScoreReplace = "((score))"
+)
+
+const (
+	Sum = "SUM"
+	Min = "MIN"
+	Max = "MAX"
+	Avg = "AVG"
+)
 
 //decision
 const (

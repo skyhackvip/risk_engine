@@ -14,6 +14,7 @@ type Dsl struct {
 	Conditionals   []Conditional    `yaml:"conditionals,flow"`
 	Decisiontrees  []Decisiontree   `yaml:"decisiontrees,flow"`
 	DecisionMatrix []DecisionMatrix `yaml:"decisionmatrixs,flow"`
+	ScoreCards     []ScoreCard      `yaml:"scorecards,flow"`
 }
 
 //load dsl from file
@@ -154,4 +155,9 @@ func (dsl *Dsl) ParseDecisionTree(decisionTree Decisiontree) interface{} {
 //parse decisionmatrix
 func (dsl *Dsl) ParseDecisionMatrix(decisionMatrix DecisionMatrix) interface{} {
 	return decisionMatrix.parse()
+}
+
+//parse scorecard
+func (dsl *Dsl) ParseScoreCard(sc ScoreCard) interface{} {
+	return sc.parse()
 }

@@ -6,4 +6,5 @@ var Mock = map[string]interface{}{
 	"feature_3": 20,
 	"feature_4": 20,
 	"feature_5": 40,
+	"feature_6": "yes",
 }

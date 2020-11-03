@@ -9,6 +9,7 @@ import (
 type Rule struct {
 	Conditions []Condition `yaml:"conditions,flow"`
 	RuleName   string      `yaml:"rule_name"`
+	RuleGroup  string      `yaml:"rule_group"`
 	Logic      string      `yaml:"logic"`
 	Decision   string      `yaml:"decision"`
 	Depends    []string    `yaml:"depends"`
