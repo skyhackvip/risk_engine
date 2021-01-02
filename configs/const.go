@@ -40,9 +40,10 @@ const (
 
 //all support node
 const (
-	START       = "start"
-	END         = "end"
-	RULESET     = "ruleset"
-	ABTEST      = "abtest"
-	CONDITIONAL = "conditional"
+	START        = "start"
+	END          = "end"
+	RULESET      = "ruleset"
+	ABTEST       = "abtest"
+	CONDITIONAL  = "conditional"
+	DECISIONTREE = "decisiontree"
 )

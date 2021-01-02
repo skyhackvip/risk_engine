@@ -18,6 +18,7 @@ func Compare(operator string, left interface{}, right interface{}) (bool, error)
 	}
 	expr, _ = govaluate.NewEvaluableExpression(fmt.Sprintf("left %s right", configs.OperatorMap[operator]))
 	eval, err := expr.Evaluate(params)
+	fmt.Println("expr", expr, params, eval)
 	if err != nil {
 		return false, err
 	}

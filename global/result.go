@@ -7,3 +7,13 @@ type DslResult struct {
 	Track        []string
 	Detail       []interface{}
 }
+
+var rs DslResult
+
+func SetResult(rs DslResult) {
+	rs = rs
+}
+
+func GetResult() DslResult {
+	return rs
+}
