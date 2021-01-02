@@ -94,6 +94,14 @@ func (dsl *Dsl) gotoNextNode(nodeName string, category string, result *global.Ds
 		decisionTree := dsl.FindDecisionTree(node.NodeName)
 		rs, _ := decisionTree.parse()
 		result.Decision = rs
+	case configs.DECISIONMATRIX:
+		decisionMatrix := dsl.FindDecisionMatrix(node.NodeName)
+		rs, _ := decisionMatrix.parse()
+		result.Decision = rs
+	case configs.SCORECARD:
+		scorecard := dsl.FindScoreCard(node.NodeName)
+		rs, _ := scorecard.parse()
+		result.Decision = rs
 	case configs.END:
 		result.NextNodeName = ""
 		result.NextCategory = ""
@@ -120,10 +128,31 @@ func (dsl *Dsl) FindConditional(name string) *Conditional {
 	return nil
 }
 
+//dsl.DecisionTrees []DecisionTree
 func (dsl *Dsl) FindDecisionTree(name string) *DecisionTree {
 	for _, decisionTree := range dsl.DecisionTrees {
 		if decisionTree.Name == name {
 			return &decisionTree
+		}
+	}
+	return nil
+}
+
+//dsl.DecisionMatrixs []DecisionMatrix
+func (dsl *Dsl) FindDecisionMatrix(name string) *DecisionMatrix {
+	for _, decisionMatrix := range dsl.DecisionMatrixs {
+		if decisionMatrix.Name == name {
+			return &decisionMatrix
+		}
+	}
+	return nil
+}
+
+//dsl.ScoreCards []ScoreCard
+func (dsl *Dsl) FindScoreCard(name string) *ScoreCard {
+	for _, scoreCard := range dsl.ScoreCards {
+		if scoreCard.Name == name {
+			return &scoreCard
 		}
 	}
 	return nil
