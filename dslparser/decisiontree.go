@@ -2,29 +2,34 @@ package dslparser
 
 import (
 	//	"github.com/skyhackvip/risk_engine/internal"
+	"github.com/skyhackvip/risk_engine/internal/errcode"
 	"github.com/skyhackvip/risk_engine/operator"
 	"log"
 )
 
-type Decisiontree struct {
+type DecisionTree struct {
 	Name      string     `yaml:"name"`
 	Depends   []string   `yaml:"depends,flow"`
 	Rules     []Rule     `yaml:"rules,flow"`
 	Decisions []Decision `yaml:"decisions,flow"`
 }
 
-func (dt *Decisiontree) parse() string {
+func (dt *DecisionTree) parse() (interface{}, error) {
 	log.Printf("decisiontree %s parse ...\n", dt.Name)
 	var result = make(map[string]bool, 0)
 	for _, rule := range dt.Rules {
-		result[rule.Decision] = rule.parse()
+		rs, err := rule.parse()
+		if err != nil {
+			return nil, err
+		}
+		result[rule.Decision] = rs.(bool)
 	}
 	for _, decision := range dt.Decisions {
 		if parseDecision(result, decision) {
-			return decision.Output
+			return decision.Output, nil
 		}
 	}
-	return ""
+	return nil, errcode.ParseErrorDecisionTreeOutputEmpty
 }
 
 func parseDecision(result map[string]bool, decision Decision) bool {

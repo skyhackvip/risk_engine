@@ -11,7 +11,10 @@ func TestDecisionMatrix(t *testing.T) {
 	internal.SetFeature("model_1", 85)
 	internal.SetFeature("model_2", 180)
 	dsl := dslparser.LoadDslFromFile("decisionmatrix.yaml")
-	rs := dsl.ParseDecisionMatrix(dsl.DecisionMatrix[0])
+	rs, err := dsl.ParseDecisionMatrix(dsl.DecisionMatrixs[0])
+	if err != nil {
+		t.Error(err)
+	}
 	if rs == "C" {
 		t.Log("result is ", rs)
 	} else {

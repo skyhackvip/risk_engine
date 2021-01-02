@@ -9,12 +9,12 @@ import (
 )
 
 type Dsl struct {
-	Workflow       []Node           `yaml:"workflow,flow"`
-	Rulesets       []Ruleset        `yaml:"rulesets,flow"`
-	Conditionals   []Conditional    `yaml:"conditionals,flow"`
-	Decisiontrees  []Decisiontree   `yaml:"decisiontrees,flow"`
-	DecisionMatrix []DecisionMatrix `yaml:"decisionmatrixs,flow"`
-	ScoreCards     []ScoreCard      `yaml:"scorecards,flow"`
+	Workflow        []Node           `yaml:"workflow,flow"`
+	Rulesets        []Ruleset        `yaml:"rulesets,flow"`
+	Conditionals    []Conditional    `yaml:"conditionals,flow"`
+	DecisionTrees   []DecisionTree   `yaml:"decisiontrees,flow"`
+	DecisionMatrixs []DecisionMatrix `yaml:"decisionmatrixs,flow"`
+	ScoreCards      []ScoreCard      `yaml:"scorecards,flow"`
 }
 
 //load dsl from file
@@ -44,7 +44,8 @@ func (dsl *Dsl) Parse() *global.DslResult {
 	dsl.gotoNextNode(firstNode.NodeName, firstNode.Category, result)
 
 	//loop parse node and go to next node
-	for !isBreakDecision(result.Decision) && result.NextNodeName != "" {
+	for result.NextNodeName != "" {
+		//拒绝退出for !isBreakDecision(result.Decision) && result.NextNodeName != "" {
 		dsl.gotoNextNode(result.NextNodeName, result.NextCategory, result)
 	}
 	log.Println("dsl parse end!")
@@ -78,17 +79,21 @@ func (dsl *Dsl) gotoNextNode(nodeName string, category string, result *global.Ds
 		return
 	case configs.RULESET:
 		ruleset := dsl.FindRuleset(node.NodeName)
-		result.Decision = ruleset.parse()
+		result.Decision, _ = ruleset.parse()
 	case configs.CONDITIONAL:
 		conditional := dsl.FindConditional(node.NodeName)
-		rs := conditional.parse()
-		if rs == "" { //not match any branch, error
+		rs, _ := conditional.parse()
+		if rs == nil { //not match any branch, error
 			result.NextNodeName = ""
 			log.Println(node.NodeName, "not match any branch")
 		} else {
-			result.NextNodeName = rs
-			result.NextCategory = dsl.FindNode(rs).Category
+			result.NextNodeName = rs.(string)
+			result.NextCategory = dsl.FindNode(rs.(string)).Category
 		}
+	case configs.DECISIONTREE:
+		decisionTree := dsl.FindDecisionTree(node.NodeName)
+		rs, _ := decisionTree.parse()
+		result.Decision = rs
 	case configs.END:
 		result.NextNodeName = ""
 		result.NextCategory = ""
@@ -110,6 +115,15 @@ func (dsl *Dsl) FindConditional(name string) *Conditional {
 	for _, conditional := range dsl.Conditionals {
 		if conditional.ConditionalName == name {
 			return &conditional
+		}
+	}
+	return nil
+}
+
+func (dsl *Dsl) FindDecisionTree(name string) *DecisionTree {
+	for _, decisionTree := range dsl.DecisionTrees {
+		if decisionTree.Name == name {
+			return &decisionTree
 		}
 	}
 	return nil
@@ -138,26 +152,26 @@ func (dsl *Dsl) FindStartNode() *Node {
 }
 
 //parse ruleset
-func (dsl *Dsl) ParseRuleset(ruleset Ruleset) interface{} {
+func (dsl *Dsl) ParseRuleset(ruleset Ruleset) (interface{}, error) {
 	return ruleset.parse()
 }
 
 //parse conditional
-func (dsl *Dsl) ParseConditional(conditional Conditional) interface{} {
+func (dsl *Dsl) ParseConditional(conditional Conditional) (interface{}, error) {
 	return conditional.parse()
 }
 
 //parse decisiontree
-func (dsl *Dsl) ParseDecisionTree(decisionTree Decisiontree) interface{} {
+func (dsl *Dsl) ParseDecisionTree(decisionTree DecisionTree) (interface{}, error) {
 	return decisionTree.parse()
 }
 
 //parse decisionmatrix
-func (dsl *Dsl) ParseDecisionMatrix(decisionMatrix DecisionMatrix) interface{} {
+func (dsl *Dsl) ParseDecisionMatrix(decisionMatrix DecisionMatrix) (interface{}, error) {
 	return decisionMatrix.parse()
 }
 
 //parse scorecard
-func (dsl *Dsl) ParseScoreCard(sc ScoreCard) interface{} {
+func (dsl *Dsl) ParseScoreCard(sc ScoreCard) (interface{}, error) {
 	return sc.parse()
 }

@@ -3,6 +3,7 @@ package dslparser
 import (
 	"fmt"
 	"github.com/skyhackvip/risk_engine/internal"
+	"github.com/skyhackvip/risk_engine/internal/errcode"
 	"log"
 	"strings"
 )
@@ -14,23 +15,27 @@ type DecisionMatrix struct {
 	Decisions []Decision `yaml:"decisions,flow"`
 }
 
-func (dm *DecisionMatrix) parse() string {
+func (dm *DecisionMatrix) parse() (interface{}, error) {
 	log.Printf("decisionmatrix %s parse ...\n", dm.Name)
 	depends := internal.GetFeatures(dm.Depends)
 	log.Println("depend", depends)
 	var result = make([]string, 0)
 	for _, rule := range dm.Rules {
-		if rule.parse() { //true will be added
+		rs, err := rule.parse()
+		if err != nil {
+			return nil, err
+		}
+		if rs.(bool) { //true will be added
 			result = append(result, rule.Decision)
 		}
 	}
 	for _, decision := range dm.Decisions {
 		//compare slice []{x,y}
 		if compareSlice(decision.Depends, result) {
-			return decision.Output
+			return decision.Output, nil
 		}
 	}
-	return ""
+	return nil, errcode.ParseErrorDecisionMatrixOutputEmpty
 }
 
 func compareSlice(s1, s2 []string) bool {

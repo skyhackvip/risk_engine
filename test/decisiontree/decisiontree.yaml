@@ -1,7 +1,7 @@
 decisiontrees:
   - decisiontree:
     name: decisiontree_1
-    depends: [feature_1, feature_2]
+    #depends: [feature_1, feature_2]
     rules:
     - rule:
       rule_name: "rule_1"

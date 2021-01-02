@@ -15,12 +15,16 @@ type ScoreCard struct {
 	Decision Decision `yaml:"decision"`
 }
 
-func (sc *ScoreCard) parse() float64 {
+func (sc *ScoreCard) parse() (interface{}, error) {
 	log.Printf("scorecard %s parse ...\n", sc.Name)
 	var result = make(map[string]string, 0)
 	for _, rule := range sc.Rules {
 		if _, exists := result[rule.RuleGroup]; !exists {
-			if rule.parse() { //hit
+			rs, err := rule.parse()
+			if err != nil {
+				return nil, err
+			}
+			if rs.(bool) { //hit
 				result[rule.RuleGroup] = rule.Decision
 			}
 		}
@@ -32,7 +36,7 @@ func (sc *ScoreCard) parse() float64 {
 	return parseScoreCard(scores, sc.Decision.Logic, sc.Decision.Output)
 }
 
-func parseScoreCard(scores []string, logic string, output string) float64 {
+func parseScoreCard(scores []string, logic string, output string) (interface{}, error) {
 	var score float64
 	switch logic {
 	case configs.Sum:
@@ -40,6 +44,9 @@ func parseScoreCard(scores []string, logic string, output string) float64 {
 		score = scoreStr.(float64)
 	}
 	expr := strings.Replace(output, configs.ScoreReplace, strconv.FormatFloat(score, 'f', -1, 64), -1)
-	result, _ := operator.Math(expr)
-	return result.(float64)
+	result, err := operator.Math(expr)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
 }

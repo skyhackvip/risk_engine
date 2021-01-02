@@ -2,6 +2,7 @@ package dslparser
 
 import (
 	"github.com/skyhackvip/risk_engine/internal"
+	"github.com/skyhackvip/risk_engine/internal/errcode"
 	"github.com/skyhackvip/risk_engine/operator"
 )
 
@@ -21,13 +22,16 @@ type Branch struct {
 }
 
 //conditional gateway parse
-func (conditional *Conditional) parse() string {
+func (conditional *Conditional) parse() (interface{}, error) {
 	depends := internal.GetFeatures(conditional.Depends) //need to check
 	for _, branch := range conditional.Branchs {         //loop all the branch
 		var conditionRs = make([]bool, 0)
 		for _, condition := range branch.Conditions {
 			if data, ok := depends[condition.Feature]; ok {
-				rs, _ := operator.Compare(condition.Operator, data, condition.Value)
+				rs, err := operator.Compare(condition.Operator, data, condition.Value)
+				if err != nil {
+					return nil, err
+				}
 				conditionRs = append(conditionRs, rs)
 			} else { //get feature fail
 				continue //can modify according scene
@@ -35,10 +39,10 @@ func (conditional *Conditional) parse() string {
 		}
 		logicRs, _ := operator.Boolean(conditionRs, branch.Logic)
 		if logicRs { //if true, choose the branch and break
-			return branch.Decision
+			return branch.Decision, nil
 		} else {
 			continue
 		}
 	}
-	return "" //can't find any branch
+	return nil, errcode.ParseErrorNoBranchMatch //can't find any branch
 }

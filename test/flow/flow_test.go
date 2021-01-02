@@ -8,9 +8,12 @@ import (
 )
 
 func TestFlow1(t *testing.T) {
-
 	dsl := dslparser.LoadDslFromFile("flow.yaml")
 	rs := dsl.Parse().Decision
+	if rs == nil {
+		t.Error("nil")
+		return
+	}
 	if rs.(int) == configs.DecisionMap["reject"] {
 		t.Log("ok")
 	} else {
