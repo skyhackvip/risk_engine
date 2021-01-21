@@ -3,7 +3,7 @@ package dslparser
 import (
 	"github.com/skyhackvip/risk_engine/configs"
 	"github.com/skyhackvip/risk_engine/global"
-	"github.com/skyhackvip/risk_engine/operator"
+	"github.com/skyhackvip/risk_engine/internal/operator"
 	"log"
 	"strconv"
 	"strings"

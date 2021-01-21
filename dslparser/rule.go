@@ -2,7 +2,7 @@ package dslparser
 
 import (
 	"github.com/skyhackvip/risk_engine/internal/dto"
-	"github.com/skyhackvip/risk_engine/operator"
+	"github.com/skyhackvip/risk_engine/internal/operator"
 	"log"
 )
 
