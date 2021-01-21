@@ -2,7 +2,7 @@ package dslparser
 
 import (
 	"github.com/skyhackvip/risk_engine/configs"
-	"github.com/skyhackvip/risk_engine/global"
+	"github.com/skyhackvip/risk_engine/internal/dto"
 	yaml "gopkg.in/yaml.v2"
 	"io/ioutil"
 	"log"
@@ -33,19 +33,18 @@ func LoadDslFromFile(file string) *Dsl {
 }
 
 //parse dsl run node followed workflow
-func (dsl *Dsl) Parse() *global.DslResult {
+func (dsl *Dsl) Parse(result *dto.DslResult) *dto.DslResult {
 	log.Println("dsl parse start...")
 	if len(dsl.Workflow) == 0 {
 		panic("dsl workflow is empty!")
 	}
-	var result = new(global.DslResult)
+	//result := ctx.Value("result").(*global.DslResult) //new(global.DslResult)
 	//from start node
 	firstNode := dsl.FindStartNode()
 	dsl.gotoNextNode(firstNode.NodeName, firstNode.Category, result)
 
 	//loop parse node and go to next node
-	for result.NextNodeName != "" {
-		//拒绝退出for !isBreakDecision(result.Decision) && result.NextNodeName != "" {
+	for result.NextNodeName != "" && !isBreakDecision(result.Decision) {
 		dsl.gotoNextNode(result.NextNodeName, result.NextCategory, result)
 	}
 	log.Println("dsl parse end!")
@@ -61,7 +60,7 @@ func isBreakDecision(decision interface{}) bool {
 }
 
 //parse node and find next
-func (dsl *Dsl) gotoNextNode(nodeName string, category string, result *global.DslResult) {
+func (dsl *Dsl) gotoNextNode(nodeName string, category string, result *dto.DslResult) {
 	//find current node from workflow
 	node := dsl.FindNode(nodeName)
 	if node == nil {
@@ -79,10 +78,10 @@ func (dsl *Dsl) gotoNextNode(nodeName string, category string, result *global.Ds
 		return
 	case configs.RULESET:
 		ruleset := dsl.FindRuleset(node.NodeName)
-		result.Decision, _ = ruleset.parse()
+		result.Decision, _ = ruleset.parse(result)
 	case configs.CONDITIONAL:
 		conditional := dsl.FindConditional(node.NodeName)
-		rs, _ := conditional.parse()
+		rs, _ := conditional.parse(result)
 		if rs == nil { //not match any branch, error
 			result.NextNodeName = ""
 			log.Println(node.NodeName, "not match any branch")
@@ -181,13 +180,13 @@ func (dsl *Dsl) FindStartNode() *Node {
 }
 
 //parse ruleset
-func (dsl *Dsl) ParseRuleset(ruleset Ruleset) (interface{}, error) {
-	return ruleset.parse()
+func (dsl *Dsl) ParseRuleset(ruleset Ruleset, result *dto.DslResult) (interface{}, error) {
+	return ruleset.parse(result)
 }
 
 //parse conditional
-func (dsl *Dsl) ParseConditional(conditional Conditional) (interface{}, error) {
-	return conditional.parse()
+func (dsl *Dsl) ParseConditional(conditional Conditional, result *dto.DslResult) (interface{}, error) {
+	return conditional.parse(result)
 }
 
 //parse decisiontree

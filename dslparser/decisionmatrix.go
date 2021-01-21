@@ -2,7 +2,7 @@ package dslparser
 
 import (
 	"fmt"
-	"github.com/skyhackvip/risk_engine/internal"
+	"github.com/skyhackvip/risk_engine/global"
 	"github.com/skyhackvip/risk_engine/internal/errcode"
 	"log"
 	"strings"
@@ -17,11 +17,11 @@ type DecisionMatrix struct {
 
 func (dm *DecisionMatrix) parse() (interface{}, error) {
 	log.Printf("decisionmatrix %s parse ...\n", dm.Name)
-	depends := internal.GetFeatures(dm.Depends)
+	depends := global.Features.Get(dm.Depends)
 	log.Println("depend", depends)
 	var result = make([]string, 0)
 	for _, rule := range dm.Rules {
-		rs, err := rule.parse()
+		rs, err := rule.parse(depends)
 		if err != nil {
 			return nil, err
 		}

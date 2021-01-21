@@ -1,7 +1,7 @@
 package dslparser
 
 import (
-	//	"github.com/skyhackvip/risk_engine/internal"
+	"github.com/skyhackvip/risk_engine/global"
 	"github.com/skyhackvip/risk_engine/internal/errcode"
 	"github.com/skyhackvip/risk_engine/operator"
 	"log"
@@ -17,8 +17,9 @@ type DecisionTree struct {
 func (dt *DecisionTree) parse() (interface{}, error) {
 	log.Printf("decisiontree %s parse ...\n", dt.Name)
 	var result = make(map[string]bool, 0)
+	depends := global.Features.Get(dt.Depends)
 	for _, rule := range dt.Rules {
-		rs, err := rule.parse()
+		rs, err := rule.parse(depends)
 		if err != nil {
 			return nil, err
 		}

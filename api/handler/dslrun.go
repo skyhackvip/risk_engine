@@ -2,31 +2,40 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
-	//	"github.com/skyhackvip/global"
 	"github.com/skyhackvip/risk_engine/dslparser"
-	"github.com/skyhackvip/risk_engine/internal"
+	"github.com/skyhackvip/risk_engine/global"
+	"github.com/skyhackvip/risk_engine/internal/dto"
 	"net/http"
-	"strconv"
+	//"strconv"
+	"fmt"
 )
 
+func init() {
+	fmt.Println("init")
+	global.Features = dto.NewGlobalFeatures()
+	global.DslResult = dto.NewDslResult()
+}
+
 func DslRunHandler(c *gin.Context) {
-	f1 := c.PostForm("f1")
-	f2 := c.PostForm("f2")
-	f_1, _ := strconv.ParseInt(f1, 0, 64)
-	f_2, _ := strconv.ParseBool(f2)
-	internal.SetFeature("feature_1", f_1)
-	internal.SetFeature("feature_2", f_2)
+	var request dto.DslRunRequest
+	err := c.ShouldBindJSON(&request)
+	if err != nil {
+		fmt.Println(err)
+	}
+	//global.Features = &dto.GlobalFeatureS{Features: make(map[string]dto.Feature)}
+	for k, v := range request.Features {
+		//datasource.SetFeature(k, v)
+		f := dto.Feature{Name: k, Value: v}
+		global.Features.Set(f)
+	}
 
-	dsl := dslparser.LoadDslFromFile("decisiontree.yaml")
-	//var dslResult global.DslResult
-	//	dsl.SetResult(&dslResult)
+	fmt.Println(global.Features)
 
-	//rs := dsl.ParseDecisionTree(dsl.Decisiontrees[0])
-	rs := dsl.Parse()
-
+	flow := request.Flow
+	dsl := dslparser.LoadDslFromFile("yaml/" + flow + ".yaml")
+	rs := dsl.Parse(global.DslResult)
 	c.JSON(http.StatusOK, gin.H{
-		"rs": rs,
-		"f1": f_1,
-		"f2": f_2,
+		"flow":   flow,
+		"result": rs,
 	})
 }

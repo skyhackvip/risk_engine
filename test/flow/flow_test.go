@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/skyhackvip/risk_engine/configs"
 	"github.com/skyhackvip/risk_engine/dslparser"
-	"github.com/skyhackvip/risk_engine/internal"
+	"github.com/skyhackvip/risk_engine/internal/datasource"
 	"testing"
 )
 
@@ -22,9 +22,9 @@ func TestFlow1(t *testing.T) {
 }
 
 func TestFlow2(t *testing.T) {
-	internal.SetFeature("feature_1", 20)
-	internal.SetFeature("feature_2", 20)
-	internal.SetFeature("feature_3", 20)
+	datasource.SetFeature("feature_1", 20)
+	datasource.SetFeature("feature_2", 20)
+	datasource.SetFeature("feature_3", 20)
 
 	dsl := dslparser.LoadDslFromFile("flow.yaml")
 	rs := dsl.Parse().Decision

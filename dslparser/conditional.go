@@ -1,7 +1,8 @@
 package dslparser
 
 import (
-	"github.com/skyhackvip/risk_engine/internal"
+	"github.com/skyhackvip/risk_engine/global"
+	"github.com/skyhackvip/risk_engine/internal/dto"
 	"github.com/skyhackvip/risk_engine/internal/errcode"
 	"github.com/skyhackvip/risk_engine/operator"
 )
@@ -22,13 +23,17 @@ type Branch struct {
 }
 
 //conditional gateway parse
-func (conditional *Conditional) parse() (interface{}, error) {
-	depends := internal.GetFeatures(conditional.Depends) //need to check
-	for _, branch := range conditional.Branchs {         //loop all the branch
+func (conditional *Conditional) parse(result *dto.DslResult) (interface{}, error) {
+	nodeResult := dto.NewNodeResult(conditional.ConditionalName)
+	depends := global.Features.Get(conditional.Depends)
+	nodeResult.AddFactor(depends)
+	for _, branch := range conditional.Branchs { //loop all the branch
 		var conditionRs = make([]bool, 0)
 		for _, condition := range branch.Conditions {
 			if data, ok := depends[condition.Feature]; ok {
-				rs, err := operator.Compare(condition.Operator, data, condition.Value)
+				//data
+				//TODO
+				rs, err := operator.Compare(condition.Operator, data.Value, condition.Value)
 				if err != nil {
 					return nil, err
 				}
@@ -39,6 +44,8 @@ func (conditional *Conditional) parse() (interface{}, error) {
 		}
 		logicRs, _ := operator.Boolean(conditionRs, branch.Logic)
 		if logicRs { //if true, choose the branch and break
+			nodeResult.SetDecision(branch.Decision)
+			result.AddDetail(*nodeResult)
 			return branch.Decision, nil
 		} else {
 			continue

@@ -6,3 +6,7 @@ type Node struct {
 	NextNodeName string `yaml:"next_node_name"`
 	NextCategory string `yaml:"next_category"`
 }
+
+func (node *Node) GotoNext() *Node {
+	return nil
+}

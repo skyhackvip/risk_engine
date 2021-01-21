@@ -2,6 +2,7 @@ package dslparser
 
 import (
 	"github.com/skyhackvip/risk_engine/configs"
+	"github.com/skyhackvip/risk_engine/global"
 	"github.com/skyhackvip/risk_engine/operator"
 	"log"
 	"strconv"
@@ -10,7 +11,7 @@ import (
 
 type ScoreCard struct {
 	Name     string   `yaml:"name"`
-	Depends  string   `yaml:"depends"`
+	Depends  []string `yaml:"depends,flow"`
 	Rules    []Rule   `yaml:"rules,flow"`
 	Decision Decision `yaml:"decision"`
 }
@@ -18,9 +19,10 @@ type ScoreCard struct {
 func (sc *ScoreCard) parse() (interface{}, error) {
 	log.Printf("scorecard %s parse ...\n", sc.Name)
 	var result = make(map[string]string, 0)
+	depends := global.Features.Get(sc.Depends)
 	for _, rule := range sc.Rules {
 		if _, exists := result[rule.RuleGroup]; !exists {
-			rs, err := rule.parse()
+			rs, err := rule.parse(depends)
 			if err != nil {
 				return nil, err
 			}
