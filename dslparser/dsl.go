@@ -181,6 +181,7 @@ func (dsl *Dsl) FindStartNode() *Node {
 
 //parse ruleset
 func (dsl *Dsl) ParseRuleset(ruleset Ruleset, result *dto.DslResult) (interface{}, error) {
+	log.Println("test parse ruleset")
 	return ruleset.parse(result)
 }
 

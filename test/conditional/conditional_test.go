@@ -3,18 +3,29 @@ package main
 import (
 	"github.com/skyhackvip/risk_engine/configs"
 	"github.com/skyhackvip/risk_engine/dslparser"
-	"github.com/skyhackvip/risk_engine/internal"
+	"github.com/skyhackvip/risk_engine/global"
+	"github.com/skyhackvip/risk_engine/internal/dto"
 	"testing"
 )
 
-func TestConditional(t *testing.T) {
-	internal.SetFeature("feature_1", 10)
-	internal.SetFeature("feature_2", 10)
-	internal.SetFeature("feature_3", 10)
-	internal.SetFeature("feature_4", 10)
+func init() {
+	global.DslResult = dto.NewDslResult()
+	global.Features = dto.NewGlobalFeatures()
+	features := map[string]interface{}{
+		"feature_1": 60,
+		"feature_2": 20,
+		"feature_3": 30,
+		"feature_4": 40,
+	}
+	for k, v := range features {
+		global.Features.Set(dto.Feature{Name: k, Value: v})
+	}
+}
 
-	dsl := dslparser.LoadDslFromFile("conditional.yaml")
-	result := dsl.Parse()
+func TestConditional(t *testing.T) {
+
+	dsl := dslparser.LoadDslFromFile("../yaml/flow_conditional.yaml")
+	result := dsl.Parse(global.DslResult)
 
 	if result.Decision == configs.DecisionMap["reject"] {
 		t.Log("Decision result is: pass")

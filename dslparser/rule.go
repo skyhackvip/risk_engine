@@ -1,6 +1,8 @@
 package dslparser
 
 import (
+	"errors"
+	"fmt"
 	"github.com/skyhackvip/risk_engine/internal/dto"
 	"github.com/skyhackvip/risk_engine/internal/operator"
 	"log"
@@ -18,25 +20,34 @@ type Rule struct {
 //parse rule
 func (rule *Rule) parse(depends map[string]dto.Feature) (interface{}, error) {
 	var conditionRs = make([]bool, 0)
-
+	if len(rule.Conditions) == 0 {
+		return nil, errors.New(fmt.Sprintf("rule (%s) condition is empty", rule.RuleName))
+	}
 	for _, condition := range rule.Conditions {
+		log.Println("aaa", depends)
 		if data, ok := depends[condition.Feature]; ok {
-			if data.Name == "" { //TODO
-				log.Println("data error")
+			if data.Name == "" {
+				log.Println("data error : data name is empty")
 				continue
 			}
 			rs, err := operator.Compare(condition.Operator, data.Value, condition.Value)
-			//log.Printf("rule %s parse : %v %v %v ,result is: %v\n", rule.RuleName, data.Value, condition.Operator, condition.Value, rs)
 			if err != nil {
 				return nil, err
 			}
 			conditionRs = append(conditionRs, rs)
+		} else {
+			//lack of feature
+			log.Printf("lack of feature:%s\n", condition.Feature)
+			continue
 		}
+	}
+	if len(conditionRs) == 0 {
+		return nil, errors.New(fmt.Sprintf("rule (%s) condition is empty", rule.RuleName))
 	}
 	logicRs, err := operator.Boolean(conditionRs, rule.Logic)
 	log.Printf("rule %s decision is: %v\n", rule.RuleName, logicRs)
 	if err != nil {
 		return nil, err
 	}
-	return logicRs, err
+	return logicRs, nil
 }
