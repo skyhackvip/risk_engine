@@ -11,11 +11,13 @@
 本项目用于学习和参考，不能直接用于生产环境。代码会不定期迭代更新，可以加关注定期查看。如有交流欢迎加微信号留言。
 
 ### 服务测试
-go build engine.go
-./engine
+- go build engine.go
+- ./engine
 
 请求接口：
+```json
 curl -XPOST  -v  http://localhost:8889/run -d'{"flow":"flow_conditional","features":{"feature_1":18,"feature_2":30,"feature_3":20,"feature_4":30}}' -H'Context-Type:application/json'
+```
 flow:决策流，存储在test/yaml中
 
 接口返回：
