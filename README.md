@@ -10,6 +10,18 @@
 ### 开源声明
 本项目用于学习和参考，不能直接用于生产环境。代码会不定期迭代更新，可以加关注定期查看。如有交流欢迎加微信号留言。
 
+### 服务测试
+go build engine.go
+./engine
+
+请求接口：
+curl -XPOST  -v  http://localhost:8889/run -d'{"flow":"flow_conditional","features":{"feature_1":18,"feature_2":30,"feature_3":20,"feature_4":30}}' -H'Context-Type:application/json'
+flow:决策流，存储在test/yaml中
+
+接口返回：
+```json
+{"flow":"flow_conditional","result":{"NextNodeName":"","NextCategory":"","Decision":null,"Track":["start_1","conditional_1","ruleset_2","end_2"],"Detail":[{"NodeName":"conditional_1","Factor":{"feature_4":{"Name":"feature_4","Type":0,"Value":30,"Default":null}},"Hits":null,"Decision":"ruleset_2"},{"NodeName":"ruleset_2","Factor":{"feature_1":{"Name":"feature_1","Type":0,"Value":18,"Default":null},"feature_2":{"Name":"feature_2","Type":0,"Value":30,"Default":null}},"Hits":null,"Decision":0}]}}
+```
 
 
 ### 决策引擎架构图
