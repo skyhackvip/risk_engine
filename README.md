@@ -11,8 +11,13 @@
 本项目用于学习和参考，不能直接用于生产环境，转载使用请说明出处。代码不定期迭代更新，可加关注查看。如有交流欢迎加微信号 ***hepenggj*** 
 
 ### 服务测试
-- go build engine.go
-- ./engine
+```shell
+git clone https://github.com/skyhackvip/risk_engine
+cd risk_engine
+go build engine.go
+./engine
+```
+
 - 请求接口： flow:决策流，存储在test/yaml中
 ```json
 curl -XPOST  -v  http://localhost:8889/run -H'Context-Type:application/json' 
@@ -63,6 +68,7 @@ curl -XPOST  -v  http://localhost:8889/run -H'Context-Type:application/json'
 ```
 
 ### 代码结构
+```
 ├── api   接口逻辑
 
 ├── configs  配置文件
@@ -88,6 +94,7 @@ curl -XPOST  -v  http://localhost:8889/run -H'Context-Type:application/json'
 ├── test 测试用例
 
 │  └── yaml 测试yaml文件
+```
 
 ### 决策引擎架构图
 ![决策引擎架构图](https://i.loli.net/2021/01/21/bOR1tyVPnCZNGoi.png)
