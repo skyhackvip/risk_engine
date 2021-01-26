@@ -13,18 +13,69 @@
 ### 服务测试
 - go build engine.go
 - ./engine
-
-请求接口：
+- 请求接口： flow:决策流，存储在test/yaml中
 ```json
-curl -XPOST  -v  http://localhost:8889/run -d'{"flow":"flow_conditional","features":{"feature_1":18,"feature_2":30,"feature_3":20,"feature_4":30}}' -H'Context-Type:application/json'
+curl -XPOST  -v  http://localhost:8889/run -H'Context-Type:application/json' 
+-d'{"flow":"flow_conditional","features":{"feature_1":18,"feature_2":30,"feature_3":20,"feature_4":30}}'
 ```
-flow:决策流，存储在test/yaml中
-
-接口返回：
+- 接口返回：
 ```json
-{"flow":"flow_conditional","result":{"NextNodeName":"","NextCategory":"","Decision":null,"Track":["start_1","conditional_1","ruleset_2","end_2"],"Detail":[{"NodeName":"conditional_1","Factor":{"feature_4":{"Name":"feature_4","Type":0,"Value":30,"Default":null}},"Hits":null,"Decision":"ruleset_2"},{"NodeName":"ruleset_2","Factor":{"feature_1":{"Name":"feature_1","Type":0,"Value":18,"Default":null},"feature_2":{"Name":"feature_2","Type":0,"Value":30,"Default":null}},"Hits":null,"Decision":0}]}}
+{
+	"flow": "flow_conditional",
+	"result": {
+		"NextNodeName": "",
+		"NextCategory": "",
+		"Decision": null,
+		"Track": ["start_1", "conditional_1", "ruleset_2", "end_2"],
+		"Detail": [{
+			"NodeName": "conditional_1",
+			"Factor": {
+				"feature_4": {
+					"Name": "feature_4",
+					"Type": 0,
+					"Value": 30,
+					"Default": null
+				}
+			},
+			"Hits": null,
+			"Decision": "ruleset_2"
+		}, {
+			"NodeName": "ruleset_2",
+			"Factor": {
+				"feature_1": {
+					"Name": "feature_1",
+					"Type": 0,
+					"Value": 18,
+					"Default": null
+				},
+				"feature_2": {
+					"Name": "feature_2",
+					"Type": 0,
+					"Value": 30,
+					"Default": null
+				}
+			},
+			"Hits": null,
+			"Decision": 0
+		}]
+	}
+}
 ```
 
+### 代码结构
+├── api   接口逻辑
+├── configs  配置文件
+├── docs 文档
+├── dslparser 决策引擎解析核心目录
+├── engine.go 启动文件
+├── global 全局上下文
+├── internal
+│  ├── dto 数据传输对象
+│  ├── errcode 错误异常定义
+│  ├── feature 特征
+│  └── operator 操作算子
+├── test 测试用例
+│  └── yaml 测试yaml文件
 
 ### 决策引擎架构图
 ![决策引擎架构图](https://i.loli.net/2021/01/21/bOR1tyVPnCZNGoi.png)
