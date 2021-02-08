@@ -45,7 +45,6 @@ func (dsl *Dsl) Parse(result *dto.DslResult) *dto.DslResult {
 
 	//loop parse node and go to next node
 	for result.NextNodeName != "" && !isBreakDecision(result.Decision) {
-		log.Println("这个必须靠", result)
 		dsl.gotoNextNode(result.NextNodeName, result.NextCategory, result)
 	}
 	log.Println("dsl parse end!")
