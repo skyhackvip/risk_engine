@@ -14,14 +14,6 @@ type Conditional struct {
 	Branchs         []Branch `yaml:"branchs,flow"`
 }
 
-//branch in conditional
-type Branch struct {
-	BranchName string      `yaml:"branch_name"`
-	Conditions []Condition `yaml:"conditions"`
-	Logic      string      `yaml:"logic"`
-	Decision   string      `yaml:"decision"`
-}
-
 //conditional gateway parse
 func (conditional *Conditional) parse(result *dto.DslResult) (interface{}, error) {
 	nodeResult := dto.NewNodeResult(conditional.ConditionalName)

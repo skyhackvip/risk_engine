@@ -8,11 +8,6 @@ import (
 	"net/http"
 )
 
-func init() {
-	global.Features = dto.NewGlobalFeatures()
-	global.DslResult = dto.NewDslResult()
-}
-
 func DslRunHandler(c *gin.Context) {
 	var request dto.DslRunRequest
 	err := c.ShouldBindJSON(&request)
@@ -22,6 +17,8 @@ func DslRunHandler(c *gin.Context) {
 		})
 		return
 	}
+	global.Features = dto.NewGlobalFeatures()
+	global.DslResult = dto.NewDslResult()
 	for k, v := range request.Features {
 		f := dto.Feature{Name: k, Value: v}
 		global.Features.Set(f)

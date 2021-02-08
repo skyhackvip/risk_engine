@@ -1,5 +1,5 @@
 package dslparser
 
-type Base interface {
+type BaseNode interface {
 	parse() (interface{}, error)
 }

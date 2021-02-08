@@ -12,6 +12,7 @@ type Dsl struct {
 	Workflow        []Node           `yaml:"workflow,flow"`
 	Rulesets        []Ruleset        `yaml:"rulesets,flow"`
 	Conditionals    []Conditional    `yaml:"conditionals,flow"`
+	Abtests         []Abtest         `yaml:"abtests,flow"`
 	DecisionTrees   []DecisionTree   `yaml:"decisiontrees,flow"`
 	DecisionMatrixs []DecisionMatrix `yaml:"decisionmatrixs,flow"`
 	ScoreCards      []ScoreCard      `yaml:"scorecards,flow"`
@@ -38,13 +39,13 @@ func (dsl *Dsl) Parse(result *dto.DslResult) *dto.DslResult {
 	if len(dsl.Workflow) == 0 {
 		panic("dsl workflow is empty!")
 	}
-	//result := ctx.Value("result").(*global.DslResult) //new(global.DslResult)
 	//from start node
 	firstNode := dsl.FindStartNode()
 	dsl.gotoNextNode(firstNode.NodeName, firstNode.Category, result)
 
 	//loop parse node and go to next node
 	for result.NextNodeName != "" && !isBreakDecision(result.Decision) {
+		log.Println("这个必须靠", result)
 		dsl.gotoNextNode(result.NextNodeName, result.NextCategory, result)
 	}
 	log.Println("dsl parse end!")
@@ -89,6 +90,16 @@ func (dsl *Dsl) gotoNextNode(nodeName string, category string, result *dto.DslRe
 			result.NextNodeName = rs.(string)
 			result.NextCategory = dsl.FindNode(rs.(string)).Category
 		}
+	case configs.ABTEST:
+		abtest := dsl.FindAbtest(node.NodeName)
+		rs, _ := abtest.parse(result)
+		if rs == nil { //not match any branch, error
+			result.NextNodeName = ""
+			log.Println(node.NodeName, "not match any branch")
+		} else {
+			result.NextNodeName = rs.(string)
+			result.NextCategory = dsl.FindNode(rs.(string)).Category
+		}
 	case configs.DECISIONTREE:
 		decisionTree := dsl.FindDecisionTree(node.NodeName)
 		rs, _ := decisionTree.parse()
@@ -122,6 +133,16 @@ func (dsl *Dsl) FindConditional(name string) *Conditional {
 	for _, conditional := range dsl.Conditionals {
 		if conditional.ConditionalName == name {
 			return &conditional
+		}
+	}
+	return nil
+}
+
+//dsl.Abtests []Abtest
+func (dsl *Dsl) FindAbtest(name string) *Abtest {
+	for _, abtest := range dsl.Abtests {
+		if abtest.Name == name {
+			return &abtest
 		}
 	}
 	return nil
@@ -188,6 +209,11 @@ func (dsl *Dsl) ParseRuleset(ruleset Ruleset, result *dto.DslResult) (interface{
 //parse conditional
 func (dsl *Dsl) ParseConditional(conditional Conditional, result *dto.DslResult) (interface{}, error) {
 	return conditional.parse(result)
+}
+
+//parse abtest
+func (dsl *Dsl) ParseAbtest(abtest Abtest, result *dto.DslResult) (interface{}, error) {
+	return abtest.parse(result)
 }
 
 //parse decisiontree

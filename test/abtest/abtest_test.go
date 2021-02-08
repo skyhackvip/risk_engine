@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/skyhackvip/risk_engine/configs"
 	"github.com/skyhackvip/risk_engine/dslparser"
 	"github.com/skyhackvip/risk_engine/global"
 	"github.com/skyhackvip/risk_engine/internal/dto"
@@ -22,13 +21,8 @@ func init() {
 	}
 }
 
-func TestConditional(t *testing.T) {
-	dsl := dslparser.LoadDslFromFile("../yaml/flow_conditional.yaml")
-	result := dsl.Parse(global.DslResult)
-	if result.Decision == configs.DecisionMap["reject"] {
-		t.Log("Decision result is: pass")
-	} else {
-		t.Error("Decision result is:", result.Decision)
-	}
-	t.Log("Decision track is:", result.Track)
+func TestAbtest(t *testing.T) {
+	dsl := dslparser.LoadDslFromFile("../yaml/flow_abtest.yaml")
+	dsl.Parse(global.DslResult)
+	return
 }

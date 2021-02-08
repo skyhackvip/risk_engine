@@ -24,7 +24,6 @@ func (rule *Rule) parse(depends map[string]dto.Feature) (interface{}, error) {
 		return nil, errors.New(fmt.Sprintf("rule (%s) condition is empty", rule.RuleName))
 	}
 	for _, condition := range rule.Conditions {
-		log.Println("aaa", depends)
 		if data, ok := depends[condition.Feature]; ok {
 			if data.Name == "" {
 				log.Println("data error : data name is empty")
