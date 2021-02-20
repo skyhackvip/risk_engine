@@ -104,6 +104,6 @@ curl -XPOST  -v  http://localhost:8889/run -H'Context-Type:application/json'
 [智能风控决策引擎系统可落地实现方案（六）风控监控大盘实现](https://mp.weixin.qq.com/s?__biz=MzIyMzMxNjYwNw==&mid=2247483882&idx=1&sn=cb1142ea342b03f2f4ada44383e4bcbe&chksm=e8215efadf56d7ecae2159b7f742678d6036e6df046513ccce0efb052029d13b4c7b67ae1bc6&token=290046129&lang=zh_CN#rd)
 
 
-扫码关注微信订阅号支持：
+扫码关注微信公众号 ***技术岁月*** 支持：
 
 ![技术岁月](https://i.loli.net/2021/01/21/orQm9BUkEqKAR6x.jpg)
